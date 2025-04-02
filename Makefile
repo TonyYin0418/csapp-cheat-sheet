@@ -3,8 +3,8 @@
 
 # Swap these two if running in WSL
 # PDFLATEX=pdflatex.exe
-PDFLATEX=pdflatex
-
+PDFLATEX=pdflatex --shell-escape
+# for svg support
 main.pdf: main.tex
 	$(PDFLATEX) "$<" || (touch "$@"; false)
 	$(PDFLATEX) "$<"
