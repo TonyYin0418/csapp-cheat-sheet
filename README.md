@@ -5,7 +5,7 @@ Information** and **Chapter 3: Machine-Level Representation
 of Programs**, and is designed for the midterm exam in Wuhan University.
 
 [Click here to view the cheat sheet for midterm exam
-PDF](https://github.com/TonyYin0418/csapp-cheat-sheet/main.pdf).
+PDF](https://github.com/TonyYin0418/csapp-cheat-sheet/raw/main/main.pdf).
 
 
 # Modifying & Compiling
