@@ -1,0 +1,76 @@
+\section{GNU Debugger}
+
+\textbf{Running}
+\begin{itemize}[noitemsep, topsep=1pt]
+    \item \tt{run}: Run the program
+    \item \tt{kill}: Kill the program
+    \item \tt{step}: Go to next line (Source C code)
+    \item \tt{next}: Go to next line (Source C code) but step over function calls
+    \item \tt{stepi}: Go to next instruction (Assembly code)
+    \item \tt{continue}: Continue running
+    \item \tt{finish}: Continue until current function returns
+\end{itemize}
+\textbf{Breakpoints}
+\begin{itemize}[noitemsep, topsep=1pt]
+    \item \tt{break <where>}:
+    \begin{itemize}[noitemsep, topsep=1pt]
+        \item \tt{break <function name>}
+        \item \tt{break <file>:<line number>}
+        \item \tt{break *<address>}
+    \end{itemize}
+    \item \tt{delete <num>}: eg: \tt{delete 2} to delete breakpoint 2
+    \item \tt{clear}: Delete all breakpoints
+    \item \tt{enable / disable <num>}: Enable or disable
+    \vspace{10pt}
+    \item \tt{info breakpoints / registers / functions /\\locals / args / displays}
+\end{itemize}
+\textbf{Variables and memory}
+\begin{itemize}[noitemsep, topsep=1pt]
+    \item \tt{print/format <what>}:
+        \begin{itemize}[noitemsep, topsep=1pt]
+            \item \tt{print \$register} -- print register
+            \item \tt{print \$variable} -- print variable
+            \item \tt{print *(0x<address>)} -- print memory
+        \end{itemize}
+    \item \tt{x/nfu <address>}:
+        \begin{itemize}[noitemsep, topsep=1pt]
+            \item \tt{n}: Number of items to print (default 1)
+            \item \tt{f}: Format (see below)
+            \item \tt{u}: Size of each item:
+                \begin{itemize}[noitemsep, topsep=1pt]
+                    \item \tt{b}: Byte
+                    \item \tt{h}: Halfword (2 bytes)
+                    \item \tt{w}: Word (4 bytes)
+                    \item \tt{g}: Giant (8 bytes)
+                \end{itemize}
+        \end{itemize}
+\end{itemize}
+\textbf{Format for printing}
+\begin{itemize}[noitemsep, topsep=1pt]
+    \item \tt{a}: Pointer
+    \item \tt{c}: Read as integer, print as character
+    \item \tt{d}: Integer, signed decimal (10)
+    \item \tt{f}: Floating point number
+    \item \tt{o}: Integer, Octal (8)
+    \item \tt{s}: Try to treat as C string
+    \item \tt{t}: Integer, binary (2)
+    \item \tt{u}: Integer, unsigned decimal (10)
+    \item \tt{x}: Integer, hexadecimal (16)
+\end{itemize}
+\vspace{5pt}
+\textbf{Initialize for Bomb Lab}
+\begin{verbatim}
+# Compiling into asm (sum.s)
+gcc -Og -S sum.c
+
+# Disassembling Object Code
+objdump -d sum > sum.asm
+
+# .gdbinit
+break phase_1
+break initialize_bomb (send_msg / explode_bomb)
+command
+jump *(0x4014b9)
+end
+run ans.txt 
+\end{verbatim}

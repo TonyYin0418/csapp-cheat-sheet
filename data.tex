@@ -1,0 +1,86 @@
+\section{Integers}
+\begin{itemize}[noitemsep, topsep=1pt]
+    \item Example of storing \tt{0x1234567} at \tt{0x100} \\
+    \begin{tabular}{| r || c | c | c | c |}
+        \hline
+                      & \tt{0x100} & \tt{0x101} & \tt{0x102} & \tt{0x103} \\ \hline
+        Big endian    & \tt{01}    & \tt{23}    & \tt{45}    & \tt{67}    \\ \hline
+        Little endian & \tt{67}    & \tt{45}    & \tt{23}    & \tt{01}    \\ \hline
+    \end{tabular} \\
+    \item $\lceil x/2^k \rceil$ is given by \tt{(x + (1 << k) - 1) >> k}
+    \item $x/2^k$ is given by \tt{(x<0 ? x+(1<<k)-1 : x) >> k}
+\end{itemize}
+\vspace{-15pt}
+\section{Bitwise Operations}
+\begin{itemize}[noitemsep, topsep=1pt]
+\item \textbf{Logical shift} -- Fills left end with zeros (unsigned)
+\item \textbf{Arithmetic shift} -- Sign-extends left end (signed)
+\end{itemize}
+\vspace{-15pt}
+
+\section{Floating Point}
+\begin{itemize}[noitemsep, topsep=1pt]
+    \item Contains $3$ parts \tt{sign,exp,frac}
+    \item 3 parts of \tt{float}: 1+8+23=32; \tt{double}: 1+11+52=64
+    \item Lacks common +*rules \tt{a*b*c != a*(b*c),} \tt{a+b+c != a+(b+c),} \tt{a*(b+c) != a*b + a*c}
+    \item $V = (-1)^s \times M \times 2^E$
+    \item Sign bit $s$ 1-bit , $0$ for $V>=0$ , $1$ for $V<=0$
+    \item Exponent $E$, $k$-bit \tt{exp} field
+    \item Significand (mantissa) $M$ -- $0\leq M<1$ or $1\leq M<2$, represented by $n$-bit \tt{frac} field ($f_{n - 1}\cdots f_1 f_0$)
+    \item Normalized values
+    \begin{itemize}[noitemsep, topsep=1pt]
+        \item \tt{exp} is neither all zeros nor all ones
+        \item $E = e - $Bias where $e$ is the unsigned number in \tt{exp} and Bias $= 2^{k - 1} - 1$
+        \item \tt{frac} represents $0 \leq f < 1$ with $0.f_{n - 1}\cdots f_1 f_0$ and $M = 1 + f$
+        \item 
+            \begin{tabular}{|c|c|c|} \hline
+            \tt{1} & \tt{10000000} & \tt{10101010101010101010101} \\ \hline
+            \multicolumn{3}{|c|}{$(-1)\times 2^1\times 1.10101010101010101010101$}\\ \hline
+            \end{tabular} 
+    \end{itemize}
+    \item Denormalized values
+    \begin{itemize}[noitemsep, topsep=1pt]
+        \item \tt{exp} all zeros
+        \item Exponent value is $E = 1 - Bias$, $M = f$ (no leading 1)
+        \item
+            \begin{tabular}{|c|c|c|} \hline
+            \tt{0} & \tt{00000000} & \tt{10101010101010101010101} \\ \hline
+            \multicolumn{3}{|c|}{$1\times 2^{1-01111111}\times 0.10101010101010101010101$}\\ \hline
+            \end{tabular} 
+    \end{itemize}
+    \item Special values
+    \begin{itemize}[noitemsep, topsep=1pt]
+        \item Exponent field is all ones
+        \item Fraction field all zeros can represent $\pm \infty$, depending on sign bit
+        \item Nonzero fraction field is NaN
+        \item $+\infty=0,11111111,00000000000000000000000$
+        \item every conditional expression with \tt{NaN} is 0
+        \item \tt{NaN == NaN} is $0$
+        \item every arithmetic expression with \tt{NaN} is \tt{NaN}
+        \item \tt{NaN * 0} is \tt{NaN}
+        \item forcibly trans \tt{inf} or \tt{NaN} to \tt{int} gets $int_{min}$
+    \end{itemize}
+    \item Rounding
+    \begin{itemize}[noitemsep, topsep=1pt]
+        \item Rounds to the nearest even
+        \item \tt{BBGRXXXX} can round to \tt{BBG} or \tt{BBG+1}
+        \item \tt{G} -- Guard bit; least significant bit of result
+        \item \tt{R} -- Round bit; first bit removed
+        \item \tt{XXXX} -- Sticky bit; OR of remaining bits
+        \item Round up conditions:
+        \begin{itemize}[noitemsep, topsep=1pt]
+            \item Round = 1, Sticky = 1 $\to$ \tt{BBG+1}
+            \item Round = 0 $\to$ \tt{BBG}
+            \item Guard = 1, Round = 1, Sticky = 0 $\to$ \tt{BBG+1}
+            \item Guard = 0, Round = 1, Sticky = 0 $\to$ \tt{BBG}
+        \end{itemize}
+    \end{itemize}
+    \item Multiplication
+    \begin{itemize}[noitemsep, topsep=1pt]
+        \item $(-1)^{s_1}M_12^{E_1} \times (-1)^{s_2}M_22^{E_2}$ \\
+              \null \qquad \qquad \qquad \qquad $= (-1)^{s_1 \string^ s_2}(M_1 \times M_2)2^{E_1 + E_2}$
+        \item If $M_1 \times M_2 \geq 2$, $M= M_1\times M_2/2$,$E=E_1+E_2+1$
+        \item If $E$ out of range, overflow to \tt{inf}
+        \item Round $M$ to fit \tt{frac} precision
+    \end{itemize}
+\end{itemize}
