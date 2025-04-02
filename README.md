@@ -16,6 +16,6 @@ Recompile with `make`.
 
 # Acknowledgments 
 
-- [Pittow2](https://github.com/Pittow2)
+- [Pittow2](https://github.com/Pittow2) 🐖
 - Randy Bryant and David O'Hallaron for their excellent textbook
 - This repository is based on [jstrieb/systems-programming-cheat-sheet](https://github.com/jstrieb/systems-programming-cheat-sheet)
