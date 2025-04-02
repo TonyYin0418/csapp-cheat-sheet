@@ -10,13 +10,13 @@
     \item $\lceil x/2^k \rceil$ is given by \tt{(x + (1 << k) - 1) >> k}
     \item $x/2^k$ is given by \tt{(x<0 ? x+(1<<k)-1 : x) >> k}
 \end{itemize}
-\vspace{-15pt}
+\vspace{-20pt}
 \section{Bitwise Operations}
 \begin{itemize}[noitemsep, topsep=1pt]
 \item \textbf{Logical shift} -- Fills left end with zeros (unsigned)
 \item \textbf{Arithmetic shift} -- Sign-extends left end (signed)
 \end{itemize}
-\vspace{-15pt}
+\vspace{-20pt}
 
 \section{Floating Point}
 \begin{itemize}[noitemsep, topsep=1pt]
@@ -69,10 +69,12 @@
         \item \tt{XXXX} -- Sticky bit; OR of remaining bits
         \item Round up conditions:
         \begin{itemize}[noitemsep, topsep=1pt]
-            \item Round = 1, Sticky = 1 $\to$ \tt{BBG+1}
             \item Round = 0 $\to$ \tt{BBG}
-            \item Guard = 1, Round = 1, Sticky = 0 $\to$ \tt{BBG+1}
-            \item Guard = 0, Round = 1, Sticky = 0 $\to$ \tt{BBG}
+            \item Round = 1, Sticky = 1 $\to$ \tt{BBG+1}
+            \item Round = 1, Sticky = 0, Guard = 0 $\to$ \tt{BBG}
+            \item Round = 1, Sticky = 0, Guard = 1 $\to$ \tt{BBG+1}
+            \item $1.010\underline{0}11 \to 1.010$, $1.010\underline{1}01 \to 1.011$
+            \item $1.010\underline{1}00 \to 1.010$, $1.011\underline{1}00 \to 1.011$
         \end{itemize}
     \end{itemize}
     \item Multiplication
@@ -83,4 +85,5 @@
         \item If $E$ out of range, overflow to \tt{inf}
         \item Round $M$ to fit \tt{frac} precision
     \end{itemize}
+
 \end{itemize}
