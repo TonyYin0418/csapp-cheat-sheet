@@ -1,0 +1,13 @@
+\section{Linking}
+\begin{itemize}[nosep]
+    \item \bf{ELF}. 链接关注: Section, 执行关注: Segment.
+    \item \bf{Symbols} 不包括 Local non-static，与linker无关。
+    \item \bf{Global}: 函数和普通全局变量。
+    \item \quad Global分为 \bf{Strong}: 函数/初始化的；\bf{Weak}: 未初始化。
+    \item \bf{External}: 定义在其他文件中。
+    \item \bf{Local}：用\tt{static}定义的函数和全局变量。
+    \item \tt{COMMON}: 未初始化的全局变量。
+    \item \tt{.bss}: 未初始化静态变量，为0的全局和静态变量。
+    \item \bf{Relocation.} PC32是相对寻址，32是绝对寻址。
+    \item \quad \tt{offset}是代码中的位置，\tt{addend}是跳转偏移量。
+\end{itemize}

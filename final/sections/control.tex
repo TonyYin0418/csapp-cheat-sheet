@@ -1,0 +1,34 @@
+\section{Conditional Control}
+\begin{center}
+    \tt{set D} and \tt{jmp} suffixes 
+    \begin{tabular}{| c || c | c | c |}
+        \hline
+        \textbf{Instruction} & \textbf{Alias.} & \textbf{Cond.} & \textbf{Desc.} \\ \hline
+        \tt{-e} & \tt{-z} & \verb|ZF| & $=/0$ \\ \hline
+        \tt{-ne} & \tt{-nz} & \verb|~ZF| & $!=$/not zero \\ \hline
+        \tt{-s} &  & \verb|SF| & Neg \\ \hline
+        \tt{-ns} &  & \verb|~SF| & Nonneg \\ \hline
+        \tt{-g} & \tt{-nle} & \verb|~(SF^OF)&~ZF| & signed $>$ \\ \hline
+        \tt{-ge} & \tt{-nl} & \verb|~(SF^OF)| & signed $=>$ \\ \hline
+        \tt{-l} & \tt{-nge} & \verb|SF^OF| & signed $<$ \\ \hline
+        \tt{-le} & \tt{-ng} & \verb=(SF^OF)|ZF= & signed $<=$ \\ \hline
+        \tt{-a} & \tt{-nbe} & \verb|~CF&~ZF| & unsigned $>$ \\ \hline
+        \tt{-ae} & \tt{-nb} & \verb|~CF| & unsigned $>=$ \\ \hline
+        \tt{-b} & \tt{-nae} & \verb|CF| & unsigned $<$ \\ \hline
+        \tt{-be} & \tt{-na} & \verb=CF|ZF= & unsigned $<=$ \\ \hline
+    \end{tabular} \\
+    \tt{cmpq B, A},  \tt{jg L1} equals to \tt{if (A > B) goto L1;} \\
+    \tt{setne \%al} sets \tt{\%al} to 1 if not equal, 0 otherwise \\
+\end{center}
+
+\begin{itemize}[nosep]
+    \item Carry flag (\tt{CF}) 最高位进位，检查无符号操作溢出。
+    \item Zero flag (\tt{ZF}) 最近的操作：结果为0.
+    \item Sign flag (\tt{SF}) 最近的操作：结果为负数。
+    \item Overflow flag (\tt{OF}) 补码溢出，检查有符号操作溢出。
+    \item \tt{test} 模拟按位 \tt{and}，不保留结果，只改变寄存器。
+    \item \tt{cmp B, A} 模拟减法 \tt{A-B}，不保留结果，只改变寄存器。
+    \item \textbf{Switch语句}: 跳转表 jtab[索引i] 对应x=i的地址。
+    \item 编译器通常生成 $leaq + jmp *(\%reg)$
+
+\end{itemize}

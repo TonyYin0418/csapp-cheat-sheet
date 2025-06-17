@@ -1,0 +1,101 @@
+\section{Tiny Shell}
+\begin{minted}{c}
+void eval_external(struct cmdline_tokens tok, int bg, char *cmdline) {
+    pid_t pid; sigset_t mask, mask_old;
+    sigemptyset(&mask); sigaddset(&mask,SIGCHLD);
+    sigaddset(&mask,SIGINT);sigaddset(&mask, SIGTSTP); 
+    sigprocmask(SIG_BLOCK, &mask, &mask_old);
+    if((pid = fork()) == 0) {
+        sigprocmask(SIG_SETMASK, &mask_old, NULL); setpgid(0, 0);
+        execve(tok.argv[0], tok.argv, environ);
+        sio_put("Command not found: %s\n", tok.argv[0]);exit(0);
+    } else { addjob(job_list, pid, bg ? BG : FG, cmdline);
+        sigprocmask(SIG_SETMASK, &mask_old, NULL);
+        if(bg) {
+            printf("[%d] (%d) %s\n",pid2jid(pid),pid,cmdline); }
+        else { sigset_t mask_zero; sigemptyset(&mask_zero);
+            while(fgpid(job_list)==pid)sigsuspend(&mask_zero);}}}
+void eval_builtin_bg(struct cmdline_tokens tok) {
+    int jid = atoi(tok.argv[1] + 1);
+    struct job_t *job = getjobjid(job_list, jid);
+    if(job==NULL){printf("%s: No such job\n",tok.argv[1]);return;}
+    pid_t pid = job->pid; kill(pid, SIGCONT); job->state = BG; 
+    printf("[%d] (%d) %s\n", jid, pid, job->cmdline); }
+void eval_builtin_fg(struct cmdline_tokens tok) {
+    int jid = atoi(tok.argv[1] + 1);
+    struct job_t *job = getjobjid(job_list, jid);
+    if(job == NULL) {
+        printf("%s: No such job\n", tok.argv[1]); return; }
+    pid_t pid = job->pid; kill(pid, SIGCONT);
+    job->state = FG; sigset_t mask_zero; sigemptyset(&mask_zero);
+    while(pid == fgpid(job_list)) sigsuspend(&mask_zero); }
+int get_kill_pid(char *arg, pid_t *kill_pid, int *is_job_id) {
+    if(arg[0] == '%')  {
+        *is_job_id = 1; long jid = strtol(arg + 1, NULL, 10);
+        jid = jid < 0 ? -jid : jid;
+        struct job_t *job = getjobjid(job_list, jid);
+        if(!job) return -1; *kill_pid = -job->pid; }
+    else {
+        *is_job_id = 0; long pid = strtol(arg, NULL, 10);
+        if(!pid) return -1; *kill_pid = (pid_t)pid; } return 0; }
+void eval_builtin_kill(struct cmdline_tokens tok) {
+    if(tok.argv[1] == NULL) {
+       printf("kill command requires PID or %%jobid argument\n");
+       return; }
+    pid_t kill_pid; int is_job_id;
+    if(get_kill_pid(tok.argv[1], &kill_pid, &is_job_id) < 0)  {
+        if(is_job_id) printf("%s: No such job\n", tok.argv[1]);
+        else printf("%s: No such process group\n", tok.argv[1]);
+        return; }
+    kill(kill_pid, SIGTERM);
+}
+void eval_builtin_nohup(char *cmdline) {
+    sigset_t mask, mask_old;
+    sigemptyset(&mask); sigaddset(&mask, SIGHUP);
+    sigprocmask(SIG_BLOCK, &mask, &mask_old);
+    eval(cmdline + 6); sigprocmask(SIG_SETMASK, &mask_old, NULL);
+}
+void eval(char *cmdline) { //...
+int new_input_fd, new_output_fd, old_input_fd, old_output_fd;
+if(tok.infile != NULL)  { old_input_fd = dup(STDIN_FILENO);
+    new_input_fd = open(tok.infile, O_RDONLY);
+    dup2(new_input_fd, STDIN_FILENO); close(new_input_fd); }
+if(tok.outfile != NULL) { old_output_fd = dup(STDOUT_FILENO);
+    new_output_fd=open(tok.outfile,O_WRONLY | O_TRUNC | O_CREAT);
+    dup2(new_output_fd, STDOUT_FILENO); close(new_output_fd); }
+switch(tok.builtins) {
+    case BUILTIN_NONE: eval_external(tok, bg, cmdline); break;
+    // ... }
+if(tok.infile != NULL) { 
+    dup2(old_input_fd,STDIN_FILENO);close(old_input_fd); }
+if(tok.outfile != NULL) {
+    dup2(old_output_fd,STDOUT_FILENO);close(old_output_fd);}
+return;
+void sigchld_handler(int sig) {   
+    int errno_old = errno;
+    pid_t pid; int status; struct job_t *job;
+    sigset_t mask, mask_old;
+    sigfillset(&mask);
+    sigprocmask(SIG_BLOCK, &mask, &mask_old);
+    while((pid = waitpid(-1, &status, 
+                    WNOHANG | WUNTRACED | WCONTINUED)) > 0) {
+        job = getjobpid(job_list, pid);
+        if (WIFEXITED(status)) deletejob(job_list, pid);
+        else if (WIFSTOPPED(status)) {
+            sio_put("Job [%d] (%d) stopped by signal %d\n", 
+                            pid2jid(pid), pid, WSTOPSIG(status));
+            job->state = ST; }
+        else if (WIFSIGNALED(status)) {
+            sio_put("Job [%d] (%d) terminated by signal %d\n", 
+                            pid2jid(pid), pid, WTERMSIG(status));
+            deletejob(job_list, pid); }
+        else if (WIFCONTINUED(status)) job->state = BG;
+    }
+    sigprocmask(SIG_SETMASK, &mask_old, NULL);
+    errno = errno_old; return; }
+void sigint_handler(int sig)  {
+    int errno_old = errno; pid_t pid = fgpid(job_list);
+    if(pid > 0) kill(-pid, SIGINT);
+    errno = errno_old; return; }
+\end{minted}
+\vspace{-10pt}

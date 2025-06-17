@@ -1,0 +1,70 @@
+\section{Assembly Basics}
+\begin{itemize}[nosep]
+    \item ``word''=16-bit; ``double word''=32-bit (int); ``quad words''=64-bit
+    \item 64位机器下，指针是8-byte的
+    \item \tt{mov S, D} has the effect of $S \to D$
+    
+    \begin{tabular}{| l || l |} \hline
+        \tt{movq Src, Dest} & C Analog \\ \hline
+        \tt{movq \$0x4, \%rax} & \tt{tmp = 0x4} \\ \hline
+        \tt{movq \$-147, (\%rax)} & \tt{*p = -147} \\ \hline
+        \tt{movq \%rax, \%rdx} & \tt{tmp2 = tmp1} \\ \hline
+        \tt{movq \%rax, (\%rdx)} & \tt{*p = tmp} \\ \hline
+        \tt{movq (\%rax), \%rdx} & \tt{tmp = *p} \\ \hline
+    \end{tabular} \\
+    \item \tt{movzbq} 把8位(b)搬运到64位(q)寄存器，空出的高位补0(z)
+    \item \tt{movsbq} 把8位(b)搬运到64位(q)寄存器，空出的高位根据符号位(s)
+    \item \tt{leaq S, D} has the effect of $\&S \to D$
+    \item \tt{subq S, D} has the effect of $D - S \to D$
+    \item \tt{salq S, D} has the effect of $D \cdot 2^S \to D$
+\end{itemize}
+\centering{
+    Opcodes of arithmetic operations
+    \begin{tabular}{| c|c || c|c || c|c | c|c |} \hline
+        \tt{addq} & + & \tt{xorq} & $\oplus$ & \tt{salq} & \multicolumn{3}{|c|}{also \tt{shlq} \tt{<<}} \\ \hline
+        \tt{subq} & - & \tt{andq} & \& & \tt{sarq} & \multicolumn{3}{|c|}{Arithmetic \tt{>>}} \\ \hline
+        \tt{imulq} & $\times$ & \tt{orq} & $|$ & \tt{shrq} & \multicolumn{3}{|c|}{Logical \tt{>>}} \\ \hline
+        \tt{incq} & $++$ & \tt{decq} & $--$ & \tt{negq} & $-$ & \tt{notq} & $\sim$ \\ \hline
+    \end{tabular}\\
+}
+\begin{itemize}[nosep]
+\item \textbf{Logical shift} -- Fills left end with zeros (unsigned)
+\item \textbf{Arithmetic shift} -- Sign-extends left end (signed)
+\end{itemize}
+\centering{
+    \textbf{Operand Types:} 
+    \begin{itemize}[nosep]
+      \item \textbf{Immediate:} $\$Imm$ → value is $Imm$
+      \item \textbf{Register:} $r_a$ → value is $R[r_a]$
+      \item \textbf{Memory:} $Imm(r_b, r_i, s)$ → M[$Imm + R[r_b] + R[r_i] \cdot s$]
+      \item $Imm(r_b, r_i, s) \to Imm + R[r_b] + R[r_i] * s$
+    \end{itemize}
+    Operands (3 types)
+    \begin{tabular}{| c || c | c |}
+        \hline
+        \textbf{Type} & \textbf{Form} & \textbf{Operand value} \\ \hline
+        Immediate & $\$Imm$ & $Imm$ \\ \hline
+        Register & $r_a$ & $R[r_a]$ \\ \hline
+        Memory & $Imm(r_b, r_i, s)$ & M[$Imm + R[r_b] + R[r_i] \cdot s$] \\ \hline
+    \end{tabular} \\
+}
+\centering{
+    16 general purpose registers storing 64-bit values
+    
+    \begin{tabular}{| c || c | c | c | c |}
+        \hline
+        \textbf{Type} & \textbf{64-bits} & \textbf{32-bits} & \textbf{16-bits} & \textbf{8-bits} \\ \hline
+        \multicolumn{5}{|c|}{Registers below are \textbf{caller saved}} \\ \hline
+        Return val & \tt{\%rax}  & \tt{\%eax}  & \tt{\%ax}  & \tt{\%al} \\ \hline
+        1st arg & \tt{\%rdi}  & \tt{\%edi}  & \tt{\%di}  & \tt{\%dil} \\ \hline
+        2nd arg & \tt{\%rsi}  & \tt{\%esi}  & \tt{\%si}  & \tt{\%sil} \\ \hline
+        3rd arg & \tt{\%rdx}  & \tt{\%edx}  & \tt{\%dx}  & \tt{\%dl} \\ \hline
+        4th arg & \tt{\%rcx}  & \tt{\%ecx}  & \tt{\%cx}  & \tt{\%cl} \\ \hline
+        5th arg & \tt{\%r8}  & \tt{\%r8d}  & \tt{\%r8w}  & \tt{\%r8b} \\ \hline
+        6th arg & \tt{\%r9}  & \tt{\%r9d}  & \tt{\%r9w}  & \tt{\%r9b} \\ \hline
+        Caller & \tt{\%r10}  & \tt{\%r10d}  & \tt{\%r10w}  & \tt{\%r10b} \\ \hline
+        Caller & \tt{\%r11}  & \tt{\%r11d}  & \tt{\%r11w}  & \tt{\%r11b} \\ \hline
+    \end{tabular}\\
+    
+    \tt{\%rsp} is the \textbf{top of the stack} and \tt{\%rbp} is the \textbf{bottom} 
+}

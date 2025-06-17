@@ -1,0 +1,44 @@
+\section{Machine Data}
+\begin{itemize}[nosep]
+    \item K字节数据需存放在地址为K的倍数位置 (Alignment)
+    \item 基本类型大小：
+\end{itemize}
+\centering{
+    \begin{tabular}{| c || c |}
+    \hline
+    \textbf{Size (bytes)} & \textbf{Types}\\ \hline
+    1 & \tt{char}  \\ \hline
+    2 & \tt{short} \\ \hline
+    4 & \tt{int, float}  \\ \hline
+    8 & \tt{long, double, char *} \\ \hline
+    \end{tabular} \\
+}
+\begin{itemize}[nosep]
+    \item \textbf{Structs}:
+    \item 每个字段的起始地址需满足自身类型对齐要求
+    \item 字段间可能插入padding
+    \item 结构体总对齐要求 = 所有字段最大对齐
+    \item 结构体总大小 = 最大对齐的整数倍
+    \item Example: \tt{struct \{char a; int b; char c;\}} $\rightarrow$ \\12 bytes
+      \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|} \hline
+        0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\ \hline
+        a & \multicolumn{3}{c|}{pad} & \multicolumn{4}{c|}{b} & c & \multicolumn{3}{c|}{pad} \\ \hline
+      \end{tabular}
+    \item Nested structs: 内层struct按自身对齐计算后整体视为一个字段
+    \item Access field at offset d: \tt{movq d(\%rdi),\%rax}
+\end{itemize}
+\begin{itemize}[nosep]
+    \item \textbf{Unions}: 
+    \item 所有字段共享内存起始地址（偏移为0） 
+    \item 联合体总大小 = 最大成员大小
+    \item Example: \tt{union \{int i; float f; char c[4];\}} \\occupies 4 bytes total
+      \begin{tabular}{|c|c|c|c|} \hline
+        0 & 1 & 2 & 3 \\ \hline
+        \multicolumn{4}{|c|}{i (4 bytes)} \\ \hline
+        \multicolumn{4}{|c|}{f (4 bytes)} \\ \hline
+        c[0] & c[1] & c[2] & c[3] \\ \hline
+      \end{tabular}
+    \item Access any member using base address: \tt{movl (\%rdi), \%eax}
+    \item Used for type punning 双关 or memory optimization
+    \item \tt{union\{float f; int i;\};} 是用来查看浮点数内部位模式.
+\end{itemize}

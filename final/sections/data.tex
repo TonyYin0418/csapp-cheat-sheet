@@ -1,0 +1,70 @@
+\section{Integers}
+\begin{itemize}[nosep]
+    \item 
+    \begin{tabular}{| r || c | c | c | c |}
+        \hline
+                      & \tt{0x100} & \tt{0x101} & \tt{0x102} & \tt{0x103} \\ \hline
+        Big endian    & \tt{01}    & \tt{23}    & \tt{45}    & \tt{67}    \\ \hline
+        Little endian & \tt{67}    & \tt{45}    & \tt{23}    & \tt{01}    \\ \hline
+    \end{tabular} \\
+    \item $\lceil x/2^k \rceil$ is given by \tt{(x + (1 << k) - 1) >> k}
+    \item $x/2^k$ is given by \tt{(x<0 ? x+(1<<k)-1 : x) >> k}
+\end{itemize}
+\section{Floating Point}
+\begin{itemize}[nosep]
+    \item Lacks common +*rules \tt{a*b*c != a*(b*c),} \tt{a+b+c != a+(b+c),} \tt{a*(b+c) != a*b + a*c}
+    \item Contains $3$ parts \tt{sign,exp,frac}; $V = (-1)^s \times M \times 2^E$
+    \item 3 parts of \tt{float}: 1+8+23=32; \tt{double}: 1+11+52=64
+    \item Exponent $E$, $k$-bit \tt{exp} field
+    \item Significand (mantissa) $M$ -- $0\leq M<1$ or $1\leq M<2$, represented by $n$-bit \tt{frac} field ($f_{n - 1}\cdots f_1 f_0$)
+    \item Normalized values
+    \begin{itemize}[nosep]
+        \item \tt{exp} is neither all zeros nor all ones
+        \item $E = e - $Bias where $e$ is the unsigned number in \tt{exp} and Bias $= 2^{k - 1} - 1$
+        \item \tt{frac} represents $0 \leq f < 1$ with $0.f_{n - 1}\cdots f_1 f_0$ and $M = 1 + f$
+        \item 
+            \begin{tabular}{|c|c|c|} \hline
+            \tt{1} & \tt{10000000} & \tt{10101010101010101010101} \\ \hline
+            \multicolumn{3}{|c|}{$(-1)\times 2^1\times 1.10101010101010101010101$}\\ \hline
+            \end{tabular} 
+    \end{itemize}
+    \item Denormalized values
+    \begin{itemize}[nosep]
+        \item \tt{exp} all zeros
+        \item Exponent value is $E = 1 - Bias$, $M = f$ (no leading 1)
+        \item
+            \begin{tabular}{|c|c|c|} \hline
+            \tt{0} & \tt{00000000} & \tt{10101010101010101010101} \\ \hline
+            \multicolumn{3}{|c|}{$1\times 2^{1-01111111}\times 0.10101010101010101010101$}\\ \hline
+            \end{tabular} 
+    \end{itemize}
+    \item Special values
+    \begin{itemize}[nosep]
+        \item Exponent field is all ones
+        \item Fraction field all zeros can represent $\pm \infty$, depending on sign bit
+        \item Nonzero fraction field is NaN
+        \item $+\infty=0,11111111,00000000000000000000000$
+        \item every conditional expression with \tt{NaN} is 0
+        \item \tt{NaN == NaN} is $0$
+        \item every arithmetic expression with \tt{NaN} is \tt{NaN}
+        \item \tt{NaN * 0} is \tt{NaN}
+        \item forcibly trans \tt{inf} or \tt{NaN} to \tt{int} gets $int_{min}$
+    \end{itemize}
+    \item Rounding
+    \begin{itemize}[nosep]
+        \item 向更近的地方舍入，如果一样，就向偶舍入。比如下面保留四位：
+        \item \tt{1.01110010011} $\to$ \tt{1.0111}，末尾小于0.5
+        \item \tt{1.01111110011} $\to$ \tt{1.1000}，末尾大于0.5
+        \item \tt{1.0101[100...]} $\to$ \tt{1.0110}，末尾恰是0.5，奇数向偶数
+        \item \tt{1.0110[100...]} $\to$ \tt{1.0110}，末尾恰是0.5，偶数不变
+    \end{itemize}
+    \item Multiplication
+    \begin{itemize}[nosep]
+        \item $(-1)^{s_1}M_12^{E_1} \times (-1)^{s_2}M_22^{E_2}$ \\
+              \null \qquad \qquad \qquad \qquad $= (-1)^{s_1 \string^ s_2}(M_1 \times M_2)2^{E_1 + E_2}$
+        \item If $M_1 \times M_2 \geq 2$, $M= M_1\times M_2/2$,$E=E_1+E_2+1$
+        \item If $E$ out of range, overflow to \tt{inf}
+        \item Round $M$ to fit \tt{frac} precision
+        \item 溢出优先于舍入
+    \end{itemize}
+\end{itemize}

@@ -1,0 +1,22 @@
+\section{SIMD}
+\begin{itemize}[nosep]
+    \item \texttt{setzero}, \texttt{load} / \texttt{add}, \texttt{hadd} / \texttt{cast}, \texttt{extract} / \texttt{store}, \texttt{cvtss}
+    \item \texttt{ps(float)}, \texttt{pd(double)}, \texttt{epi32(int)}
+\end{itemize}
+\begin{minted}{c}
+float arraySumVector(const float* values, int N) {
+    const int W = 8; int i = 0;
+    __m256 sum256 = _mm256_setzero_ps(); 
+    for (; i <= N - W; i += W) {
+        __m256 vec = _mm256_loadu_ps(values + i);
+        sum256 = _mm256_add_ps(sum256, vec); }
+    __m128 low = _mm256_castps256_ps128(sum256);
+    __m128 high = _mm256_extractf128_ps(sum256, 1);
+    __m128 sum = _mm_add_ps(low, high);
+    sum = _mm_hadd_ps(sum, sum);
+    sum = _mm_hadd_ps(sum, sum);
+    float ans = _mm_cvtss_f32(sum);
+    for(; i < N; i++) ans += values[i];
+    return ans;
+}
+\end{minted}

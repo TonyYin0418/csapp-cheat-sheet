@@ -1,0 +1,40 @@
+\section{Optimiaztion}
+\begin{minted}{c}
+for (int bt = 0; bt < BT; bt += 8) {
+    const float *in0 = inp + (bt + 0) * C; /*...*/
+    for (int o = 0; o < OC; ++o) {
+        float val0 = bias ? bias[o] : 0.0f;
+        float val1 = val0, val2 = val0; /*...*/
+        float *row_addr = &weight[o * C];
+        for (int i = 0; i < C; ++i) {
+            float w = row_addr[i];
+            float t0 = in0[i]; float t1 = in1[i]; /*...*/
+            val0 += t0 * w; val1 += t1 * w; /*...*/ }
+        out[(bt + 0) * OC + o] = val0; /*...*/
+    }
+}
+void advanced_memset(void *s, int c, size_t n) {
+    unsigned char *schar = s;
+    uintptr_t addr_val = (uintptr_t)schar;
+    unsigned char c_byte = (unsigned char)c;
+    unsigned long c_long = 0;
+    for(size_t i = 0; i < WORD_SIZE; ++i)
+        { c_long = (c_long << 8) | c_byte; }
+    while(n > 0 && (addr_val % WORD_SIZE != 0)) {
+        byte_write(schar, c_byte);
+        --n; ++schar; addr_val = (uintptr_t)schar; }
+    unsigned long *word_ptr = (unsigned long *)schar;
+    size_t num_words = n / WORD_SIZE;
+    while(num_words >= 4) {
+        word_write(word_ptr + 0, c_long); /*...*/
+        word_ptr += 4; num_words -= 4; }
+    while(num_words > 0) {
+        word_write(word_ptr, c_long);
+        ++word_ptr; --num_words; }
+    schar = (unsigned char *)word_ptr;
+    size_t remaining_bytes = n % WORD_SIZE;
+    while(remaining_bytes > 0) {
+        byte_write(schar, c_byte);
+        --remaining_bytes; ++schar; }
+}
+\end{minted}

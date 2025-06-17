@@ -1,0 +1,114 @@
+% ========================================================================
+% CS:APP Cheat Sheet
+% Author: TonyYin, Pittow2
+% Created at Wuhan University in Spring 2025
+% Based on original work by Jacob Strieb (Spring 2019)
+% ========================================================================
+
+% ------------------------- 版面与排版 -------------------------
+
+% 双栏格式
+\documentclass[twocolumn]{article}
+
+% 设置纸张大小及页边距 (A4, 四周 0.25in)
+\usepackage[a4paper, margin=0.25in]{geometry}
+
+% 优化排版细节 (字符间距、断字等微调)
+\usepackage{microtype}
+
+% 中文支持 (采用 ctex 宏包，scheme 设为 plain 兼容性更好)
+\usepackage[scheme=plain]{ctex}
+
+% 段落标题格式调整：无编号、左对齐、行间距紧凑
+\usepackage{titlesec}
+\titleformat{\section}
+  {\fontsize{10}{-8}\bfseries\raggedright}
+  {}{0pt}{}
+\titlespacing{\section}{2pt}{2pt}{2pt}
+
+% 去除页码显示
+\pagenumbering{gobble}
+
+% 设定字体 (可按需指定字体族，此处使用默认)
+\usepackage{fontspec} 
+
+% 调整双栏间距 (默认10pt, 缩小为8pt，排版更紧凑)
+\setlength{\columnsep}{8pt}
+
+% ------------------------- 逻辑环境支持 -------------------------
+
+% 枚举列表 (带可选格式)
+\usepackage{enumerate}
+\usepackage{enumitem}
+
+% 插入图片支持
+\usepackage{graphicx}
+
+% ------------------------- 代码与高亮 -------------------------
+
+% 支持代码高亮 (minted)
+\usepackage{minted}
+\setminted{
+  fontsize=\fontsize{7}{8}\selectfont, % 代码字体小一号
+  breaklines=true,                     % 自动换行
+  tabsize=4,
+  linenos=false,
+  autogobble=true
+}
+
+% 备用代码环境 (listings)
+% \usepackage{listings}
+% \usepackage{xcolor}
+% \lstset{
+%   basicstyle=\fontsize{8}{9}\ttfamily,  
+%   keywordstyle=\color{blue}\bfseries,   
+%   commentstyle=\color{gray}\itshape,    
+%   stringstyle=\color{red},              
+%   numbers=none,                         
+%   breaklines=true,                     
+%   keepspaces=true,
+%   showstringspaces=false,
+%   columns=fullflexible,
+%   tabsize=4
+% }
+
+% ------------------------- PDF 元数据与超链接 -------------------------
+
+\usepackage[
+    pdfauthor={TonyYin, Pittow2},
+    pdftitle={CS:APP Cheat Sheet}
+]{hyperref}
+
+% ------------------------- 自定义命令 -------------------------
+
+% 重新定义粗体与等宽命令
+\renewcommand{\tt}[1]{\texttt{#1}}
+\renewcommand{\bf}[1]{\textbf{#1}}
+
+% ------------------------- 正文 -------------------------
+
+\begin{document}
+\fontsize{8pt}{9pt}\selectfont
+
+\input{sections/data}
+\input{sections/asm}
+\input{sections/control}
+\input{sections/machine_data}
+\input{sections/simd}
+\input{sections/gdb}
+\input{sections/linking}
+\input{sections/ecf}
+\input{sections/io}
+\input{sections/shell}
+\input{sections/optimization}
+
+% ------------------------- 尾部信息 -------------------------
+
+\centering{
+    Created at Wuhan University in Spring 2025\\
+    by TonyYin \& Pittow2\\
+    \url{https://github.com/TonyYin0418/csapp-cheat-sheet}\\
+    Based on \url{https://git.io/JcZ29}
+}
+
+\end{document}

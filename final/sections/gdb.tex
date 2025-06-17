@@ -1,0 +1,12 @@
+\section{GNU Debugger}
+\begin{itemize}[nosep]
+    \item \tt{run} \tt{kill} \tt{step} \tt{next} \tt{stepi} \tt{continue}
+    \item \tt{finish}: Continue until current function returns
+    \item \tt{break <function name> / <file>:<line number> / *<address>}
+    \item \tt{delete <num>} \tt{clear} \tt{enable / disable <num>}
+    \item \tt{info /  breakpoints / registers / functions /\\locals / args / displays}
+    \item \tt{layout}, \tt{layout asm, regs, src}, \tt{update}
+\item \tt{print [/FMT] <expr>}
+\item \tt{x /[N][FMT][SIZE] <addr>} \tt{x/4xw \$rsp}
+\item \quad see \texttt{help x} in GDB. hex(16),dec(10),oct(8),bin(2).
+\end{itemize}

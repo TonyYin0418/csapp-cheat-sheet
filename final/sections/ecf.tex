@@ -1,0 +1,31 @@
+\section{Processes}
+\begin{itemize}[nosep]
+    \item \tt{getpid()}, \tt{getppid()}-parent, \tt{exit(int)}永不返回
+    \item \tt{fork(void)} pid-父, 0-子; 返回两次，先后顺序不定
+    \item Processes are running, stopped, or terminated
+    \item \tt{wait(int *statusp)} $\cong$ \tt{waitpid(-1, \&status, 0)}
+    \item \tt{sleep}, t\t{pause()}, \tt{execve()}
+\end{itemize}
+
+
+
+\section{Signals}
+\begin{itemize}[nosep]
+    \item Signals 不是按顺序处理的。
+    \item \tt{setpgid(0, 0)} 会以当前PID作为ID创建新进程组
+    \item \tt{sigprocmask(int how, sigset\_t *set, sigset\_t *oldset)}
+    \item \tt{sigemptyset(sigset\_t *set)}
+    \item \tt{sigfillset(sigset\_t *set)}
+    \item \tt{sigaddset(sigset\_t *set, int sig)} -- add \tt{sig}
+    \item \tt{sigdelset(sigset\_t *set, int sig)} -- delete \tt{sig}
+    % \item Rules for signal handlers
+    % \begin{enumerate}
+    %     \item Keep them simple
+    %     \item Only call async-signal-safe functions (reentrant or uninterruptible)
+    %     \item Save and restore \tt{errno}
+    %     \item Block all signals
+    %     \item Declare global variables with \tt{volatile} -- force memory read each time (no storage in registers)
+    %     \item Declare flags with \tt{sig\_atomic\_t} -- atomic r/w
+    % \end{enumerate}
+    \item \tt{sigsuspend(sigset\_t *mask)}
+\end{itemize}

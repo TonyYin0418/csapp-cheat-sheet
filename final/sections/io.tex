@@ -1,0 +1,14 @@
+\section{System I/O}
+\begin{itemize}[nosep]
+    \item \tt{open}, \tt{open("foo.txt", O\_RDWR | O\_CREAT);}
+    \item \tt{read}, \tt{read(fd, buf, 100);}
+    \item \tt{write}, \tt{write(fd, msg, strlen(msg));}
+    \item 每个进程都有唯一的描述符表，描述符是小整数。
+    \item 操作系统维护所有进程共享的打开文件表
+    \item \quad 每个条目都有文件位置、引用计数和v-node表的指针
+    \item 操作系统维护 v-node 表，其中包含有关每个文件的信息
+    \item \tt{fork()} 后子进程会继承父进程的文件描述符表
+    \item 父进程和子进程必须关闭文件，以便内核删除文件表条目
+    \item \tt{dup(int oldfd)}, \tt{dup2(int oldfd, int newfd)}
+    \item \tt{0-stdin}, \tt{1-stdout}, \tt{2-stderr}, \tt{3... for dup}
+\end{itemize}
